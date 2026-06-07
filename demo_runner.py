@@ -8,6 +8,7 @@ Usage:
   python demo_runner.py                    # NVDA, loop failure in 15s
   python demo_runner.py --ticker AAPL      # AAPL
   python demo_runner.py --no-inject        # no failure (clean run)
+  python demo_runner.py --dry-run          # smoke test, forces MOCK_LLM=true
 """
 
 import asyncio
@@ -93,7 +94,12 @@ def run(
     ticker: str = typer.Option("NVDA", "--ticker", "-t"),
     no_inject: bool = typer.Option(False, "--no-inject", help="Skip failure injection"),
     inject_delay: float = typer.Option(INJECT_DELAY, "--delay", help="Seconds before failure injection"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Smoke test: forces MOCK_LLM=true, no API keys needed"),
 ):
+    if dry_run:
+        import os
+        os.environ["MOCK_LLM"] = "true"
+        console.print("[bold yellow]DRY RUN MODE[/bold yellow] — MOCK_LLM=true, no API keys needed")
     asyncio.run(_demo(ticker, not no_inject, inject_delay))
 
 

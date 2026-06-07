@@ -1,0 +1,38 @@
+{
+  "name": "SwarmInspector",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install -r requirements.txt",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "SwarmInspector API", "onAutoForward": "notify" }
+  },
+  "containerEnv": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "MOCK_LLM": "true"
+  },
+  "secrets": {
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic API key (optional — MOCK_LLM=true works without it)",
+      "documentationUrl": "https://console.anthropic.com/settings/keys"
+    },
+    "WANDB_API_KEY": {
+      "description": "W&B API key for Weave tracing (get from wandb.ai/settings)",
+      "documentationUrl": "https://wandb.ai/settings"
+    },
+    "REDIS_URL": {
+      "description": "Redis connection URL (optional — in-memory fallback used if absent)",
+      "documentationUrl": "https://redis.io/cloud"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  }
+}
