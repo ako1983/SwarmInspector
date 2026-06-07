@@ -26,6 +26,7 @@ from core.weave_setup import init_weave, get_weave_url
 
 from langchain_anthropic import ChatAnthropic
 from langchain_core.tools import tool
+from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from copilotkit import CopilotKitSDK, LangGraphAGUIAgent
@@ -108,20 +109,16 @@ def _build_copilot_graph():
     tools = [inject_swarm_failure, start_swarm_analysis, get_swarm_status]
     llm_with_tools = llm.bind_tools(tools)
 
+    system_msg = SystemMessage(content=(
+        "You are SwarmInspector's AI assistant. You monitor a financial analysis swarm "
+        "of 4 agents (earnings, risk, sentiment, synthesis) and an inspector swarm "
+        "(monitor → diagnostician → healer). "
+        "You can inject failures, start analyses, and get status. "
+        "Be concise and technical. Reference specific agent names and metrics."
+    ))
+
     def call_model(state: MessagesState):
-        messages = state["messages"]
-        # Add system context
-        system = {
-            "role": "system",
-            "content": (
-                "You are SwarmInspector's AI assistant. You monitor a financial analysis swarm "
-                "of 4 agents (earnings, risk, sentiment, synthesis) and an inspector swarm "
-                "(monitor → diagnostician → healer). "
-                "You can inject failures, start analyses, and get status. "
-                "Be concise and technical. Reference specific agent names and metrics."
-            ),
-        }
-        response = llm_with_tools.invoke([system] + messages)
+        response = llm_with_tools.invoke([system_msg] + state["messages"])
         return {"messages": [response]}
 
     graph = StateGraph(MessagesState)
