@@ -5,7 +5,7 @@ import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <CopilotKit runtimeUrl="/api/copilotkit" agent="swarm_assistant">
+    <CopilotKit runtimeUrl="/api/copilotkit">
       <App />
     </CopilotKit>
   </React.StrictMode>

@@ -1,10 +1,14 @@
 {
   "name": "SwarmInspector",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
-  "postCreateCommand": "pip install -r requirements.txt",
-  "forwardPorts": [8000],
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "postCreateCommand": "pip install -r requirements.txt && cd ui && npm install",
+  "forwardPorts": [8000, 3000],
   "portsAttributes": {
-    "8000": { "label": "SwarmInspector API", "onAutoForward": "notify" }
+    "8000": { "label": "SwarmInspector API", "onAutoForward": "notify" },
+    "3000": { "label": "SwarmInspector UI", "onAutoForward": "openBrowser" }
   },
   "containerEnv": {
     "PYTHONDONTWRITEBYTECODE": "1",
@@ -12,15 +16,15 @@
   },
   "secrets": {
     "ANTHROPIC_API_KEY": {
-      "description": "Anthropic API key (optional — MOCK_LLM=true works without it)",
+      "description": "Anthropic API key — powers the CopilotKit AI sidebar",
       "documentationUrl": "https://console.anthropic.com/settings/keys"
     },
     "WANDB_API_KEY": {
-      "description": "W&B API key for Weave tracing (get from wandb.ai/settings)",
+      "description": "W&B API key for Weave tracing",
       "documentationUrl": "https://wandb.ai/settings"
     },
     "REDIS_URL": {
-      "description": "Redis connection URL (optional — in-memory fallback used if absent)",
+      "description": "Redis Cloud connection URL (optional — in-memory fallback if absent)",
       "documentationUrl": "https://redis.io/cloud"
     }
   },
@@ -28,7 +32,8 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python"
