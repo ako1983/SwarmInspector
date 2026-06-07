@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Env
+.env
+
+# Node
+ui/node_modules/
+ui/dist/
+
+# W&B
+wandb/
+*.wandb
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
