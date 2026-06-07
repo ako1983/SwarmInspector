@@ -1,15 +1,11 @@
 # SUBMISSION.md
-# Cerebral Valley Platform — Submission Text (WeaveHacks 4)
-# Fill in [ ] blanks before submitting Sunday at 1pm
 
----
 
 ## Team name
-SwarmInspector
+ClaAko
 
 ## Team members
 - Ako Heidari (solo) | GitHub: github.com/ako1983 | W&B: wandb.ai/profile/ako-oka
-- X/LinkedIn: [ADD YOUR HANDLES]
 
 ---
 
