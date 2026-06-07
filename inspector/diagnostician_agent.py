@@ -3,11 +3,11 @@ inspector/diagnostician_agent.py
 Classifies failure type and produces a human-readable diagnosis via LLM.
 """
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from core.state import InspectorState
 from core.weave_setup import inspector_op
 
-client = AsyncAnthropic()
+client = AsyncOpenAI()
 
 
 @inspector_op("diagnostician")
@@ -48,13 +48,13 @@ URGENCY: <level>
 DIAGNOSIS: <narrative>
 """
 
-    response = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )
 
-    text = response.content[0].text
+    text = response.choices[0].message.content
 
     # Parse structured response
     lines = {

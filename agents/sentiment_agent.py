@@ -5,12 +5,12 @@ Analyzes market sentiment from news headlines and SEC filing tone.
 
 import asyncio
 import time
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from core.state import FinancialSwarmState
 from core.redis_state import get_state
 from core.weave_setup import agent_op
 
-client = AsyncAnthropic()
+client = AsyncOpenAI()
 AGENT_ID = "sentiment_agent"
 
 
@@ -131,13 +131,13 @@ Provide a concise sentiment assessment (3-4 sentences) covering:
 3. Divergence between retail and institutional sentiment (if any)
 """
 
-    response = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )
 
-    analysis_text = response.content[0].text
+    analysis_text = response.choices[0].message.content
 
     await heartbeat("done")
     await redis.mark_agent_done(ticker, AGENT_ID)

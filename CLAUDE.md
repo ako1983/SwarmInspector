@@ -112,7 +112,7 @@ Show: Weave dashboard with the anomaly trace highlighted. Final synthesis output
 
 ```bash
 # Required
-ANTHROPIC_API_KEY=          # your key
+OPENAI_API_KEY=             # hackathon-provided key (agents use gpt-4o-mini / gpt-4o)
 WANDB_API_KEY=              # from wandb.ai — project: swarm-inspector-weavehacks4
 
 # Optional (use in-memory fallback if not available)

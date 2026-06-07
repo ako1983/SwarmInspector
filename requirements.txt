@@ -1,5 +1,5 @@
 # Core AI + agent framework
-anthropic>=0.40.0
+openai>=1.35.0
 langgraph>=0.2.0
 
 # W&B observability

@@ -6,12 +6,12 @@ Runs after the other agents complete (or time out).
 
 import asyncio
 import time
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from core.state import FinancialSwarmState
 from core.redis_state import get_state
 from core.weave_setup import agent_op
 
-client = AsyncAnthropic()
+client = AsyncOpenAI()
 AGENT_ID = "synthesis_agent"
 
 
@@ -64,13 +64,13 @@ Write a balanced, professional synthesis that:
 Use professional financial language. No bullet points — flowing prose only.
 """
 
-    response = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
+    response = await client.chat.completions.create(
+        model="gpt-4o",
         max_tokens=500,
         messages=[{"role": "user", "content": prompt}]
     )
 
-    synthesis_text = response.content[0].text
+    synthesis_text = response.choices[0].message.content
 
     # Add recovery note if applicable
     if recovered:
