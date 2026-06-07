@@ -1,5 +1,6 @@
 # Core AI + agent framework
-openai>=1.35.0
+anthropic>=0.40.0
+openai>=1.35.0          # kept for optional use / CopilotKit
 langgraph>=0.2.0
 
 # W&B observability

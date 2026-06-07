@@ -3,11 +3,12 @@ inspector/diagnostician_agent.py
 Classifies failure type and produces a human-readable diagnosis via LLM.
 """
 
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 from core.state import InspectorState
 from core.weave_setup import inspector_op
+from core.mock_llm import is_mock
 
-client = AsyncOpenAI()
+client = AsyncAnthropic()
 
 
 @inspector_op("diagnostician")
@@ -48,13 +49,29 @@ URGENCY: <level>
 DIAGNOSIS: <narrative>
 """
 
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        max_tokens=300,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    text = response.choices[0].message.content
+    if is_mock():
+        # Return a deterministic structured response based on initial classification
+        ft = report.get("failure_type", "unknown")
+        type_map = {"loop": "infinite_loop", "silent_drop": "silent_drop", "context_drift": "context_drift"}
+        action_map = {"loop": "modify_prompt", "silent_drop": "skip_agent", "context_drift": "restart"}
+        confirmed = type_map.get(ft, "unknown")
+        action = action_map.get(ft, "escalate")
+        text = (
+            f"FAILURE_TYPE: {confirmed}\n"
+            f"ROOT_CAUSE: Agent entered a deterministic failure state detected via heartbeat analysis.\n"
+            f"ACTION: {action}\n"
+            f"URGENCY: high\n"
+            f"DIAGNOSIS: The {report['agent_id']} has been flagged with a {confirmed} failure. "
+            f"Evidence shows {report['evidence'][0] if report['evidence'] else 'anomalous behavior'}. "
+            f"Inspector is dispatching recovery signal to restore normal operation."
+        )
+    else:
+        response = await client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = response.content[0].text
 
     # Parse structured response
     lines = {

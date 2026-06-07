@@ -7,12 +7,13 @@ Supports: loop injection (same tool called repeatedly), silent_drop.
 
 import asyncio
 import time
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 from core.state import FinancialSwarmState
 from core.redis_state import get_state, LOOP_THRESHOLD
 from core.weave_setup import agent_op
+from core.mock_llm import is_mock, get_risk_mock
 
-client = AsyncOpenAI()
+client = AsyncAnthropic()
 AGENT_ID = "risk_agent"
 
 
@@ -133,13 +134,15 @@ Provide a concise risk assessment (3-4 sentences) covering:
 3. One mitigating factor
 """
 
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        max_tokens=300,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    analysis_text = response.choices[0].message.content
+    if is_mock():
+        analysis_text = get_risk_mock(ticker)
+    else:
+        response = await client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        analysis_text = response.content[0].text
 
     await heartbeat("done")
     await redis.mark_agent_done(ticker, AGENT_ID)

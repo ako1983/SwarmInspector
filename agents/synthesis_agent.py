@@ -6,12 +6,13 @@ Runs after the other agents complete (or time out).
 
 import asyncio
 import time
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 from core.state import FinancialSwarmState
 from core.redis_state import get_state
 from core.weave_setup import agent_op
+from core.mock_llm import is_mock, get_synthesis_mock
 
-client = AsyncOpenAI()
+client = AsyncAnthropic()
 AGENT_ID = "synthesis_agent"
 
 
@@ -64,13 +65,15 @@ Write a balanced, professional synthesis that:
 Use professional financial language. No bullet points — flowing prose only.
 """
 
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        max_tokens=500,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    synthesis_text = response.choices[0].message.content
+    if is_mock():
+        synthesis_text = get_synthesis_mock(ticker)
+    else:
+        response = await client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=500,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        synthesis_text = response.content[0].text
 
     # Add recovery note if applicable
     if recovered:
