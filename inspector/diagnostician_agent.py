@@ -49,7 +49,7 @@ DIAGNOSIS: <narrative>
 """
 
     response = await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )

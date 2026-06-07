@@ -132,7 +132,7 @@ Provide a concise sentiment assessment (3-4 sentences) covering:
 """
 
     response = await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )
